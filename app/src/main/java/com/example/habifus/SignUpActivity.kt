@@ -99,7 +99,7 @@ class SignUpActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
-                    Toast.makeText(this@SignUpActivity, "Network Error", Toast.LENGHT_SHORT).show()
+                    Toast.makeText(this@SignUpActivity, "Network Error", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -110,14 +110,14 @@ class SignUpActivity : AppCompatActivity() {
 
                    if (jsonResponse.getString("status") == "success") {
                        runOnUiThread {
-                           Toast.makeText(this@SignUpActivity, "Signup Successful", Toast.LENGHT_SHORT).show()
+                           Toast.makeText(this@SignUpActivity, "Signup Successful", Toast.LENGTH_SHORT).show()
                            val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
                            startActivity(intent)
                            finish()
                        }
                    } else {
                        runOnUiThread {
-                           Toast.makeText(this@SignUpActivity, "Signup Failed", Toast.LENGHT_SHORT).show()
+                           Toast.makeText(this@SignUpActivity, "Signup Failed", Toast.LENGTH_SHORT).show()
                        }
                    }
                }
