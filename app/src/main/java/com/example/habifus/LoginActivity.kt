@@ -1,9 +1,11 @@
 package com.example.habifus
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +18,7 @@ import java.io.IOException
 
 
 class LoginActivity : AppCompatActivity() {
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,7 +30,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         //UI Components
-        val backButton: ImageButton = findViewById(R.id.backButton)
+        val backButton: ImageView = findViewById(R.id.backButton)
         val emailEditText: EditText = findViewById(R.id.email)
         val passwwordEditText: EditText = findViewById(R.id.password)
         val signInButon: Button = findViewById(R.id.button)
@@ -77,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     runOnUiThread {
-                        Toast.makeText(this@LoginActiviy, "Login Successful", Toast.LENGTH_SHORT)
+                        Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_SHORT)
                             .show()
                         // val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         // startActivity(intent)
