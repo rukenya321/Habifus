@@ -5,69 +5,54 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import org.json.JSONObject
 import okhttp3.*
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import org.json.JSONObject
 import java.io.IOException
 
-
 class LoginActivity : AppCompatActivity() {
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
-        //UI Components
         val backButton: ImageView = findViewById(R.id.backButton)
         val emailEditText: EditText = findViewById(R.id.email)
-        val passwwordEditText: EditText = findViewById(R.id.password)
-        val signInButon: Button = findViewById(R.id.button)
+        val passwordEditText: EditText = findViewById(R.id.password)
+        val signInButton: Button = findViewById(R.id.button)
 
         backButton.setOnClickListener {
             finish()
         }
-        signInButon.setOnClickListener {
+
+        signInButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
-            val password = passwwordEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
 
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
             } else {
-                //Call the Method to perform Login
                 performLogin(email, password)
             }
         }
     }
 
-    //Implementation of the method to perform login logic
     private fun performLogin(email: String, password: String) {
-        val client = okHttpClient()
+        val client = OkHttpClient()
 
         val json = JSONObject().apply {
             put("email", email)
             put("password", password)
         }
 
-        val requestBody = RequestBody.create(
-            "application/json; charset=utf-8".toMediaTypeOrNull(),
-            json.toString()
-        )
-
+        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request = Request.Builder()
-            .url("http://sql7.freemysqlhosting.net/login.php")
+            .url("http://yourserverdomain/login.php")
             .post(requestBody)
             .build()
 
@@ -81,18 +66,13 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     runOnUiThread {
-                        Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_SHORT).show()
                         // val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                         // startActivity(intent)
                     }
                 } else {
                     runOnUiThread {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "Invalid Credentials",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@LoginActivity, "Invalid Credentials", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
