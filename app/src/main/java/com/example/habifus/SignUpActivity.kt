@@ -72,7 +72,7 @@ class SignUpActivity : AppCompatActivity() {
 
         val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request = Request.Builder()
-            .url("http://yourserverdomain/signup.php")
+            .url("http://habifus.scienceontheweb.net/signup.php")
             .post(requestBody)
             .build()
 
@@ -98,10 +98,6 @@ class SignUpActivity : AppCompatActivity() {
                         runOnUiThread {
                             Toast.makeText(this@SignUpActivity, "Signup Failed", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this@SignUpActivity, "Signup Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
