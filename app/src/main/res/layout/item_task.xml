@@ -11,39 +11,41 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/black"
         android:padding="16dp">
 
         <TextView
             android:id="@+id/taskTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_bold"
             android:text="Task Title"
             android:textColor="@color/grey"
-            android:textColorLink="@color/grey"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:typeface="normal" />
 
         <TextView
             android:id="@+id/taskDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/taskTitle"
+            android:fontFamily="@font/poppins_medium"
             android:text="Task Description"
             android:textColor="@color/grey"
-            android:textColorLink="@color/grey"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:typeface="normal" />
 
         <TextView
             android:id="@+id/taskDueDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/taskDescription"
+            android:fontFamily="@font/poppins_medium"
             android:text="Due Date"
             android:textColor="@color/light"
-            android:textColorLink="@color/light"
             android:textSize="12sp"
-            android:textStyle="bold" />
+            android:textStyle="italic"
+            android:typeface="serif" />
 
         <ImageView
             android:id="@+id/taskReminder"

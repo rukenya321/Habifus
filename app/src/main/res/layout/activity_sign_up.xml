@@ -141,12 +141,15 @@
         android:fontFamily="@font/poppins_light"
         android:text="Already have an account? Sign In"
         android:textColor="@color/black"
-        android:textColorLink="@color/black"
-        android:textSize="14sp"
+        android:textColorHighlight="@color/green"
+        android:textColorLink="@color/green"
+        android:textSize="16sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.322"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -39,7 +39,12 @@ class SignUpActivity : AppCompatActivity() {
         val signInStartIndex = signInText.indexOf("Sign in")
         val signInEndIndex = signInStartIndex + "Sign in".length
 
-        spannableString.setSpan(signInClickableSpan, signInStartIndex, signInEndIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(
+            signInClickableSpan,
+            signInStartIndex,
+            signInEndIndex,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
         signInTextView.text = spannableString
         signInTextView.movementMethod = LinkMovementMethod.getInstance()
         signInTextView.highlightColor = getColor(android.R.color.transparent)
@@ -70,7 +75,10 @@ class SignUpActivity : AppCompatActivity() {
             put("password", password)
         }
 
-        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
+        val requestBody = RequestBody.create(
+            "application/json; charset=utf-8".toMediaTypeOrNull(),
+            json.toString()
+        )
         val request = Request.Builder()
             .url("http://habifus.scienceontheweb.net/signup.php")
             .post(requestBody)
@@ -85,19 +93,42 @@ class SignUpActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                if (response.isSuccessful) {
-                    val jsonResponse = JSONObject(responseBody)
-                    if (jsonResponse.getString("status") == "success") {
-                        runOnUiThread {
-                            Toast.makeText(this@SignUpActivity, "Signup Successful", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
-                            startActivity(intent)
-                            finish()
+                if (response.isSuccessful && responseBody != null) {
+                    try {
+                        val jsonResponse = JSONObject(responseBody)
+                        if (jsonResponse.getString("status") == "success") {
+                            runOnUiThread {
+                                Toast.makeText(
+                                    this@SignUpActivity,
+                                    "Signup Successful",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+                        } else {
+                            runOnUiThread {
+                                Toast.makeText(
+                                    this@SignUpActivity,
+                                    "Signup Failed: ${jsonResponse.getString("message")}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
-                    } else {
+                    } catch (e: Exception) {
                         runOnUiThread {
-                            Toast.makeText(this@SignUpActivity, "Signup Failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@SignUpActivity,
+                                "Invalid response from server",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                    }
+                } else {
+                    runOnUiThread {
+                        Toast.makeText(this@SignUpActivity, "Server Error", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
