@@ -5,4 +5,5 @@
     <color name="green">#04321C</color>
     <color name="grey">#F2F1EE</color>
     <color name="light">#C1FF72</color>
+    <color name="holo_red_dark">#FFCC0000</color>
 </resources>

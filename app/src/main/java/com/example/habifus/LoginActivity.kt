@@ -1,6 +1,7 @@
 package com.example.habifus
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 
@@ -50,7 +52,8 @@ class LoginActivity : AppCompatActivity() {
             put("password", password)
         }
 
-        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
+        val requestBody =
+            json.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
             .url("http://habifus.scienceontheweb.net/login.php")
             .post(requestBody)
@@ -60,6 +63,8 @@ class LoginActivity : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {
                 runOnUiThread {
                     Toast.makeText(this@LoginActivity, "Network Error", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                    startActivity(intent)
                 }
             }
 
@@ -67,8 +72,8 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     runOnUiThread {
                         Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_SHORT).show()
-                        // val intent = Intent(this@LoginActivity, HomeActivity::class.java)
-                        // startActivity(intent)
+                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                        startActivity(intent)
                     }
                 } else {
                     runOnUiThread {
