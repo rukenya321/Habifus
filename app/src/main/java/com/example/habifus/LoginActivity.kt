@@ -55,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
         val requestBody =
             json.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         val request = Request.Builder()
-            .url("http://habifus.scienceontheweb.net/login.php")
+            .url("http://www.habifus.byethost7.com/login.php")
             .post(requestBody)
             .build()
 

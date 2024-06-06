@@ -70,7 +70,7 @@ class SignUpActivity : AppCompatActivity() {
     private fun performSignUp(fullName: String, email: String, password: String) {
         val client = OkHttpClient()
         val json = JSONObject().apply {
-            put("fullName", fullName)
+            put("name", fullName) // Make sure the key names match those expected by the server
             put("email", email)
             put("password", password)
         }
@@ -80,7 +80,7 @@ class SignUpActivity : AppCompatActivity() {
             json.toString()
         )
         val request = Request.Builder()
-            .url("http://habifus.scienceontheweb.net/signup.php")
+            .url("http://www.habifus.byethost7.com/signup.php")
             .post(requestBody)
             .build()
 
@@ -93,11 +93,11 @@ class SignUpActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                if (response.isSuccessful && responseBody != null) {
-                    try {
-                        val jsonResponse = JSONObject(responseBody)
-                        if (jsonResponse.getString("status") == "success") {
-                            runOnUiThread {
+                runOnUiThread {
+                    if (response.isSuccessful && responseBody != null) {
+                        try {
+                            val jsonResponse = JSONObject(responseBody)
+                            if (jsonResponse.getString("status") == "success") {
                                 Toast.makeText(
                                     this@SignUpActivity,
                                     "Signup Successful",
@@ -106,27 +106,22 @@ class SignUpActivity : AppCompatActivity() {
                                 val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
                                 startActivity(intent)
                                 finish()
-                            }
-                        } else {
-                            runOnUiThread {
+                            } else {
                                 Toast.makeText(
                                     this@SignUpActivity,
                                     "Signup Failed: ${jsonResponse.getString("message")}",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
-                        }
-                    } catch (e: Exception) {
-                        runOnUiThread {
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                             Toast.makeText(
                                 this@SignUpActivity,
                                 "Invalid response from server",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                    }
-                } else {
-                    runOnUiThread {
+                    } else {
                         Toast.makeText(this@SignUpActivity, "Server Error", Toast.LENGTH_SHORT)
                             .show()
                     }
