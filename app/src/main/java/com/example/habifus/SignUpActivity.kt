@@ -1,4 +1,4 @@
-package com.example.habifus
+/*package com.example.habifus
 
 import android.content.Intent
 import android.os.Bundle
@@ -129,4 +129,214 @@ class SignUpActivity : AppCompatActivity() {
             }
         })
     }
+}*/
+package com.example.habifus
+
+import android.content.Intent
+import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.google.gson.Gson
+
+class SignUpActivity : AppCompatActivity() {
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_sign_up)
+
+        val signInTextView: TextView = findViewById(R.id.alreadyhaveanaccount)
+        val signInText = "Already have an account? Sign in"
+        val spannableString = SpannableString(signInText)
+
+        val signInClickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
+        val signInStartIndex = signInText.indexOf("Sign in")
+        val signInEndIndex = signInStartIndex + "Sign in".length
+
+        spannableString.setSpan(
+            signInClickableSpan,
+            signInStartIndex,
+            signInEndIndex,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        signInTextView.text = spannableString
+        signInTextView.movementMethod = LinkMovementMethod.getInstance()
+        signInTextView.highlightColor = getColor(android.R.color.transparent)
+
+        val fullnameEditText: EditText = findViewById(R.id.fullName)
+        val emailEditText: EditText = findViewById(R.id.email)
+        val passwordEditText: EditText = findViewById(R.id.password)
+        val signUpButton: Button = findViewById(R.id.button)
+
+        signUpButton.setOnClickListener {
+            val fullName = fullnameEditText.text.toString().trim()
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
+
+            if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            } else {
+                performSignup(fullName, email, password)
+            }
+        }
+    }
+
+    private fun performSignup(email: String, fullName: String, password: String) {
+        val request = SignUpRequest(email, fullName, password)
+        RetrofitClient.apiService.signUp(request).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        try {
+                            val gson = Gson()
+                            val signupResponse = gson.fromJson(responseBody, SignUpResponse::class.java)
+                            if (signupResponse.status == "success") {
+                                Toast.makeText(this@SignUpActivity, "Signup Successful", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+                                intent.putExtra("userId", signupResponse.userId)
+                                intent.putExtra("fullName", fullName)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                Toast.makeText(this@SignUpActivity, "Error: ${signupResponse.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(this@SignUpActivity, "Malformed JSON", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this@SignUpActivity, "Server Error: Empty Response", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@SignUpActivity, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Toast.makeText(this@SignUpActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
 }
+
+
+/*package com.example.habifus
+
+import android.content.Intent
+import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class SignUpActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_sign_up)
+
+        val signInTextView: TextView = findViewById(R.id.alreadyhaveanaccount)
+        val signInText = "Already have an account? Sign in"
+        val spannableString = SpannableString(signInText)
+
+        val signInClickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
+        val signInStartIndex = signInText.indexOf("Sign in")
+        val signInEndIndex = signInStartIndex + "Sign in".length
+
+        spannableString.setSpan(
+            signInClickableSpan,
+            signInStartIndex,
+            signInEndIndex,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        signInTextView.text = spannableString
+        signInTextView.movementMethod = LinkMovementMethod.getInstance()
+        signInTextView.highlightColor = getColor(android.R.color.transparent)
+
+        val fullnameEditText: EditText = findViewById(R.id.fullName)
+        val emailEditText: EditText = findViewById(R.id.email)
+        val passwordEditText: EditText = findViewById(R.id.password)
+        val signUpButton: Button = findViewById(R.id.button)
+
+        signUpButton.setOnClickListener {
+            val fullName = fullnameEditText.text.toString().trim()
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
+
+            if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            } else {
+                performSignup(email, fullName, password)
+            }
+        }
+    }
+
+    private fun performSignup(email: String, fullName: String, password: String) {
+        val request = SignUpRequest(email, fullName, password)
+        RetrofitClient.apiService.signUp(request).enqueue(object : Callback<SignUpResponse> {
+            override fun onResponse(call: Call<SignUpResponse>, response: Response<SignUpResponse>) {
+                if (response.isSuccessful) {
+                    val signupResponse = response.body()
+                    if (signupResponse != null) {
+                        if (signupResponse.status == "success") {
+                            Toast.makeText(this@SignUpActivity, "Signup Successful", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            Toast.makeText(this@SignUpActivity, "Error: ${signupResponse.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this@SignUpActivity, "Server Error: Empty Response", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@SignUpActivity, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
+                Toast.makeText(this@SignUpActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+}*/
+
+

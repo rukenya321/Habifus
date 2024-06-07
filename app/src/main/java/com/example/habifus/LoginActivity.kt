@@ -1,4 +1,4 @@
-package com.example.habifus
+/*package com.example.habifus
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -83,4 +83,86 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
+}*/
+
+package com.example.habifus
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.google.gson.Gson
+
+class LoginActivity : AppCompatActivity() {
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_login)
+
+        val backButton: ImageView = findViewById(R.id.backButton)
+        val emailEditText: EditText = findViewById(R.id.email)
+        val passwordEditText: EditText = findViewById(R.id.password)
+        val signInButton: Button = findViewById(R.id.button)
+
+        backButton.setOnClickListener {
+            finish()
+        }
+
+        signInButton.setOnClickListener {
+            val email = emailEditText.text.toString().trim()
+            val password = passwordEditText.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+            } else {
+                performLogin(email, password)
+            }
+        }
+    }
+
+    private fun performLogin(email: String, password: String) {
+        val request = LoginRequest(email, password)
+        RetrofitClient.apiService.login(request).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    try {
+                        val gson = Gson()
+                        val loginResponse = gson.fromJson(responseBody, LoginResponse::class.java)
+                        if (loginResponse.status == "success") {
+                            Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                            intent.putExtra("userId", loginResponse.userId)
+                            intent.putExtra("fullName", loginResponse.fullName)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            Toast.makeText(this@LoginActivity, "Invalid Credentials: ${loginResponse.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        // Handle malformed JSON
+                        Toast.makeText(this@LoginActivity, "Malformed JSON", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@LoginActivity, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Toast.makeText(this@LoginActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
 }
+
+
