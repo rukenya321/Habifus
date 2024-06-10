@@ -120,7 +120,7 @@ class HomeActivity : AppCompatActivity() {
 
         // Retrieve userId from intent
         userId = intent.getIntExtra("userId", -1)
-        //*fullName = intent.getStringExtra("fullName") ?: "User"*/
+        fullName = intent.getStringExtra("fullName") ?: "User"
 
         // Display welcome message
         val welcomeTextView: TextView = findViewById(R.id.welcomeTextView)
