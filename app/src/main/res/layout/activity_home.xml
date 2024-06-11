@@ -51,7 +51,7 @@
         app:rippleColor="@color/green" />
 
     <ImageView
-        android:id="@+id/settingsIcon"
+        android:id="@+id/deleteIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -59,7 +59,7 @@
         android:backgroundTint="@color/green"
         android:foregroundTint="@color/green"
         android:padding="8dp"
-        android:src="@drawable/settings"
+        android:src="@drawable/delete_acc"
         android:tint="@color/holo_red_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -137,10 +137,9 @@ class HomeActivity : AppCompatActivity() {
         val welcomeTextView: TextView = findViewById(R.id.welcomeTextView)
         welcomeTextView.text = "Welcome, $fullName!"
 
-        val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
-        settingsIcon.setOnClickListener {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
+        val deleteIcon: ImageView = findViewById(R.id.deleteIcon)
+        deleteIcon.setOnClickListener {
+            showDeleteAccountDialog()
         }
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
@@ -166,8 +165,36 @@ class HomeActivity : AppCompatActivity() {
             Toast.makeText(this, "Invalid user ID", Toast.LENGTH_SHORT).show()
         }
 
+    }
 
 
+    private fun showDeleteAccountDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Account")
+            .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+            .setPositiveButton("Delete") { dialog, which ->
+                deleteAccount()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteAccount() {
+        RetrofitClient.apiService.deleteUser(userId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@HomeActivity, "Account deleted successfully", Toast.LENGTH_SHORT).show()
+                    // Optionally, finish the activity and navigate to the login screen
+                    finish()
+                } else {
+                    Toast.makeText(this@HomeActivity, "Failed to delete account: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Toast.makeText(this@HomeActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun updateTaskStatus(task: Task) {

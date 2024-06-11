@@ -24,8 +24,10 @@ package com.example.habifus
 
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 data class SignUpRequest(val fullName: String, val email: String, val password: String)
@@ -65,4 +67,7 @@ interface ApiService {
 
     @GET("check_email.php")
     fun checkEmailExists(@Query("email") email: String): Call<String>
+
+    @DELETE("delete_user.php")
+    fun deleteUser(@Query("id") userId: Int): Call<Void>
 }
