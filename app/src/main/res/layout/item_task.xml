@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+
         <TextView
             android:id="@+id/taskTitle"
             android:layout_width="wrap_content"
@@ -47,14 +48,24 @@
             android:textStyle="italic"
             android:typeface="serif" />
 
-        <ImageView
-            android:id="@+id/taskReminder"
+        <CheckBox
+            android:id="@+id/taskDoneCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/reminder_notification"
-            android:tint="@color/light"
-            tools:ignore="UseAppTint" />
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/dialog"
+            android:color="@color/dialog"
+            android:drawableTint="@color/dialog"
+            android:fontFamily="@font/poppins_light"
+            android:foregroundTint="@color/light"
+            android:text="Done"
+            android:textColor="@color/grey"
+            android:textSize="10sp"
+            app:buttonIconTint="@color/green" />
+
+
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

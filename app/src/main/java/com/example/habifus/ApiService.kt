@@ -34,6 +34,9 @@ data class SignUpResponse(val status: String, val message: String, val userId: I
 data class LoginRequest(val email: String, val password: String)
 data class LoginResponse(val status: String, val message: String, val userId: Int, val fullName: String)
 
+data class EmailCheckResponse(val exists: Boolean)
+
+
 
 data class TaskRequest(
     val userId: Int,
@@ -55,8 +58,11 @@ interface ApiService {
     fun login(@Body request: LoginRequest): Call<String>  // Changed to String
 
     @POST("add_task.php")
-    fun addTask(@Body request: TaskRequest): Call<TaskResponse>
+    fun addTask(@Body request: TaskRequest): Call<String>
 
     @GET("get_tasks.php")
-    fun getTasks(@Query("userId") userId: Int): Call<List<Task>>
+    fun getTasks(@Query("userId") userId: Int): Call<String>
+
+    @GET("check_email.php")
+    fun checkEmailExists(@Query("email") email: String): Call<String>
 }

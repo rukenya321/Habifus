@@ -96,6 +96,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -108,6 +109,9 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
+
+        val window = window
+        window.statusBarColor = ContextCompat.getColor(this, R.color.status_bar_color)
 
         val backButton: ImageView = findViewById(R.id.backButton)
         val emailEditText: EditText = findViewById(R.id.email)

@@ -145,6 +145,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -157,6 +158,9 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_sign_up)
+
+        val window = window
+        window.statusBarColor = ContextCompat.getColor(this, R.color.status_bar_color)
 
         val signInTextView: TextView = findViewById(R.id.alreadyhaveanaccount)
         val signInText = "Already have an account? Sign in"
@@ -195,13 +199,41 @@ class SignUpActivity : AppCompatActivity() {
             if (fullName.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             } else {
-                performSignup(fullName, email, password)
+                checkEmailExists(fullName, email, password)
             }
         }
     }
 
-    private fun performSignup(email: String, fullName: String, password: String) {
-        val request = SignUpRequest(email, fullName, password)
+    private fun checkEmailExists(fullName: String, email: String, password: String) {
+        RetrofitClient.apiService.checkEmailExists(email).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        val gson = Gson()
+                        val emailCheckResponse = gson.fromJson(responseBody, EmailCheckResponse::class.java)
+                        if (!emailCheckResponse.exists) {
+                            performSignup(fullName, email, password)
+                        } else {
+                            Toast.makeText(this@SignUpActivity, "Email already exists. Please use a different email.", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this@SignUpActivity, "Unexpected response format", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@SignUpActivity, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Toast.makeText(this@SignUpActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+    private fun performSignup(fullName: String, email: String, password: String) {
+        val request = SignUpRequest(fullName, email, password)
         RetrofitClient.apiService.signUp(request).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
@@ -212,7 +244,7 @@ class SignUpActivity : AppCompatActivity() {
                             val signupResponse = gson.fromJson(responseBody, SignUpResponse::class.java)
                             if (signupResponse.status == "success") {
                                 Toast.makeText(this@SignUpActivity, "Signup Successful", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this@SignUpActivity, HomeActivity::class.java)
+                                val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
                                 intent.putExtra("userId", signupResponse.userId)
                                 intent.putExtra("fullName", fullName)
                                 startActivity(intent)
@@ -236,6 +268,8 @@ class SignUpActivity : AppCompatActivity() {
             }
         })
     }
+
+
 
 
 

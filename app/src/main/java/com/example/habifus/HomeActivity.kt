@@ -92,16 +92,24 @@ package com.example.habifus
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
+import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -118,6 +126,9 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        val window = window
+        window.statusBarColor = ContextCompat.getColor(this, R.color.status_bar_color)
+
         // Retrieve userId from intent
         userId = intent.getIntExtra("userId", -1)
         fullName = intent.getStringExtra("fullName") ?: "User"
@@ -126,10 +137,21 @@ class HomeActivity : AppCompatActivity() {
         val welcomeTextView: TextView = findViewById(R.id.welcomeTextView)
         welcomeTextView.text = "Welcome, $fullName!"
 
+        val settingsIcon: ImageView = findViewById(R.id.settingsIcon)
+        settingsIcon.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+        }
+
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         val fab: FloatingActionButton = findViewById(R.id.fab)
 
-        adapter = TaskAdapter(tasks)
+        adapter = TaskAdapter(tasks) { task, isChecked ->
+            task.done = isChecked
+            // Optionally, update the task status on the server
+            updateTaskStatus(task)
+
+        }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
@@ -137,7 +159,20 @@ class HomeActivity : AppCompatActivity() {
             showAddTaskDialog()
         }
 
-        loadTasks()
+        if (userId != -1){
+            loadTasks()
+        }
+        else {
+            Toast.makeText(this, "Invalid user ID", Toast.LENGTH_SHORT).show()
+        }
+
+
+
+    }
+
+    private fun updateTaskStatus(task: Task) {
+        // Implement the logic to update the task status on the server
+        Toast.makeText(this, "Task status updated", Toast.LENGTH_SHORT).show()
     }
 
     private fun showAddTaskDialog() {
@@ -147,10 +182,6 @@ class HomeActivity : AppCompatActivity() {
         val taskDueDateEditText: EditText = dialogView.findViewById(R.id.taskDueDateEditText)
         val cancelButton: Button = dialogView.findViewById(R.id.cancelButton)
         val addButton: Button = dialogView.findViewById(R.id.addButton)
-
-        taskDueDateEditText.setOnClickListener {
-            showDateTimePicker(taskDueDateEditText)
-        }
 
         val alertDialog = AlertDialog.Builder(this, R.style.CustomDialogTheme)
             .setView(dialogView)
@@ -176,51 +207,11 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
+        taskDueDateEditText.setOnClickListener {
+            showDateTimePicker(taskDueDateEditText)
+        }
+
         alertDialog.show()
-    }
-
-    private fun saveTask(task: Task) {
-        val request = TaskRequest(userId, task.title, task.description, task.dueDate)
-        RetrofitClient.apiService.addTask(request).enqueue(object : Callback<TaskResponse> {
-            override fun onResponse(call: Call<TaskResponse>, response: Response<TaskResponse>) {
-                if (response.isSuccessful) {
-                    val taskResponse = response.body()
-                    if (taskResponse != null) {
-                        Toast.makeText(this@HomeActivity, "Task saved successfully", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@HomeActivity, "Server Error: Empty Response", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this@HomeActivity, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<TaskResponse>, t: Throwable) {
-                Toast.makeText(this@HomeActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun loadTasks() {
-        RetrofitClient.apiService.getTasks(userId).enqueue(object : Callback<List<Task>> {
-            override fun onResponse(call: Call<List<Task>>, response: Response<List<Task>>) {
-                if (response.isSuccessful) {
-                    val taskList = response.body()
-                    if (taskList != null) {
-                        tasks.addAll(taskList)
-                        adapter.notifyDataSetChanged()
-                    } else {
-                        Toast.makeText(this@HomeActivity, "Server Error: Empty Response", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this@HomeActivity, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onFailure(call: Call<List<Task>>, t: Throwable) {
-                Toast.makeText(this@HomeActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
     }
 
     private fun showDateTimePicker(editText: EditText) {
@@ -233,5 +224,71 @@ class HomeActivity : AppCompatActivity() {
                 editText.setText("${year}-${month + 1}-${dayOfMonth} ${hourOfDay}:${minute}")
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
+    }
+
+
+    private fun saveTask(task: Task) {
+        val request = TaskRequest(userId, task.title, task.description, task.dueDate)
+        RetrofitClient.apiService.addTask(request).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (!responseBody.isNullOrEmpty()) {
+                        Toast.makeText(this@HomeActivity, "Task saved successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@HomeActivity, "Server Error: Empty Response", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@HomeActivity, "Server Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Toast.makeText(this@HomeActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
+    private fun loadTasks() {
+        RetrofitClient.apiService.getTasks(userId).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        try {
+                            // Parse the JSON response into a list of tasks
+                            val taskListType = object : TypeToken<List<Task>>() {}.type
+                            val taskList = Gson().fromJson<List<Task>>(responseBody, taskListType)
+                            tasks.clear()
+                            tasks.addAll(taskList)
+                            adapter.notifyDataSetChanged()
+                        } catch (e: JsonSyntaxException) {
+                            Toast.makeText(this@HomeActivity, "Error parsing JSON", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this@HomeActivity, "Server Error: Empty Response", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    handleErrorResponse(response)
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Toast.makeText(this@HomeActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun handleErrorResponse(response: Response<*>) {
+        try {
+            val errorResponse = response.errorBody()?.string()
+            // Assuming the error response is in the form {"status":"error","message":"Missing user ID."}
+            val jsonResponse = JSONObject(errorResponse)
+            val errorMessage = jsonResponse.getString("message")
+            Toast.makeText(this@HomeActivity, "Error: $errorMessage", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this@HomeActivity, "Unexpected error: ${response.code()}", Toast.LENGTH_SHORT).show()
+        }
     }
 }
