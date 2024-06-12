@@ -180,8 +180,8 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun deleteAccount() {
-        RetrofitClient.apiService.deleteUser(userId).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+        RetrofitClient.apiService.deleteUser(userId).enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     Toast.makeText(this@HomeActivity, "Account deleted successfully", Toast.LENGTH_SHORT).show()
                     // Optionally, finish the activity and navigate to the login screen
@@ -191,7 +191,7 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<Void>, t: Throwable) {
+            override fun onFailure(call: Call<String>, t: Throwable) {
                 Toast.makeText(this@HomeActivity, "Network Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })

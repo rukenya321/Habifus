@@ -38,6 +38,8 @@ data class LoginResponse(val status: String, val message: String, val userId: In
 
 data class EmailCheckResponse(val exists: Boolean)
 
+data class ForgotPasswordRequest(val email: String)
+
 
 
 data class TaskRequest(
@@ -69,5 +71,8 @@ interface ApiService {
     fun checkEmailExists(@Query("email") email: String): Call<String>
 
     @DELETE("delete_user.php")
-    fun deleteUser(@Query("id") userId: Int): Call<Void>
+    fun deleteUser(@Query("id") userId: Int): Call<String>
+
+    @POST("reset_password.php")
+    fun forgotPassword(@Body request: ForgotPasswordRequest): Call<String>
 }
