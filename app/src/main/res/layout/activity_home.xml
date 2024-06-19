@@ -8,6 +8,8 @@
     android:background="@color/grey"
     tools:context=".HomeActivity">
 
+
+    <!-- Welcome TextView -->
     <TextView
         android:id="@+id/welcomeTextView"
         android:layout_width="wrap_content"
@@ -16,14 +18,15 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/poppins_bold"
-        android:textColor="@color/green"
+        android:textColor="@color/black"
         android:textSize="24sp"
-        android:textStyle="italic"
+        android:textStyle="bold"
         android:typeface="serif"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
@@ -35,6 +38,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp" />
 
+    <!-- FloatingActionButton -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -50,6 +54,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:rippleColor="@color/green" />
 
+
+    <!-- Delete Icon ImageView
     <ImageView
         android:id="@+id/deleteIcon"
         android:layout_width="wrap_content"
@@ -62,6 +68,8 @@
         android:src="@drawable/delete_acc"
         android:tint="@color/holo_red_dark"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" /> -->
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

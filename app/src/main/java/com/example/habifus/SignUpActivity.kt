@@ -245,8 +245,6 @@ class SignUpActivity : AppCompatActivity() {
                             if (signupResponse.status == "success") {
                                 Toast.makeText(this@SignUpActivity, "Signup Successful", Toast.LENGTH_SHORT).show()
                                 val intent = Intent(this@SignUpActivity, LoginActivity::class.java)
-                                intent.putExtra("userId", signupResponse.userId)
-                                intent.putExtra("fullName", fullName)
                                 startActivity(intent)
                                 finish()
                             } else {

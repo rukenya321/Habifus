@@ -94,6 +94,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
@@ -102,6 +103,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -130,17 +132,17 @@ class HomeActivity : AppCompatActivity() {
         window.statusBarColor = ContextCompat.getColor(this, R.color.status_bar_color)
 
         // Retrieve userId from intent
-        userId = intent.getIntExtra("userId", -1)
-        fullName = intent.getStringExtra("fullName") ?: "User"
+       // userId = intent.getIntExtra("userId", -1)
+      //  fullName = intent.getStringExtra("fullName") ?: "User"
 
         // Display welcome message
         val welcomeTextView: TextView = findViewById(R.id.welcomeTextView)
-        welcomeTextView.text = "Welcome, $fullName!"
+        welcomeTextView.text = "Welcome Again!"
 
-        val deleteIcon: ImageView = findViewById(R.id.deleteIcon)
+       /* val deleteIcon: ImageView = findViewById(R.id.deleteIcon)
         deleteIcon.setOnClickListener {
             showDeleteAccountDialog()
-        }
+        }*/
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         val fab: FloatingActionButton = findViewById(R.id.fab)
