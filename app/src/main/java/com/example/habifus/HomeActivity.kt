@@ -132,7 +132,7 @@ class HomeActivity : AppCompatActivity() {
         window.statusBarColor = ContextCompat.getColor(this, R.color.status_bar_color)
 
         // Retrieve userId from intent
-       // userId = intent.getIntExtra("userId", -1)
+        userId = intent.getIntExtra("userId", -1)
       //  fullName = intent.getStringExtra("fullName") ?: "User"
 
         // Display welcome message
